@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrustL Vendor Portal</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --slate-800: #1e293b;
+            --slate-600: #475569;
+            --slate-50: #f8fafc;
+            --white: #ffffff;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--slate-50);
+            color: var(--slate-800);
+            margin: 0;
+            padding: 40px 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .brand {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .tagline {
+            color: var(--slate-600);
+            margin-bottom: 40px;
+            font-size: 16px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: var(--white);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+            transition: transform 0.2s;
+        }
+
+        h2 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: var(--slate-800);
+        }
+
+        /* Upload Area */
+        .upload-box {
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 40px 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: #f1f5f9;
+            color: var(--slate-600);
+        }
+
+        .upload-box:hover {
+            border-color: var(--primary);
+            background: #ecfdf5;
+            color: var(--primary-dark);
+        }
+
+        .upload-icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+            display: block;
+            color: #94a3b8;
+        }
+
+        .upload-box:hover .upload-icon {
+            color: var(--primary);
+        }
+
+        /* Form Elements */
+        input[type="text"] {
+            width: 100%;
+            padding: 14px 16px;
+            margin: 8px 0 20px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 15px;
+            transition: border-color 0.2s;
+            outline: none;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        label {
+            display: block;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--slate-600);
+            margin-bottom: 4px;
+        }
+
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            transition: background 0.2s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: var(--primary-dark);
+        }
+
+        button:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+        }
+
+        button.secondary {
+            background: white;
+            color: var(--slate-600);
+            border: 1px solid #e2e8f0;
+            margin-top: 12px;
+        }
+
+        button.secondary:hover {
+            background: #f8fafc;
+            color: var(--slate-800);
+            border-color: #cbd5e1;
+        }
+
+        /* Results */
+        #preview {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 24px;
+            display: block;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .status {
+            margin-top: 20px;
+            font-size: 14px;
+            min-height: 20px;
+        }
+
+        .status.error {
+            color: #ef4444;
+        }
+
+        .status.success {
+            color: var(--primary);
+        }
+
+        /* Canvas Wrapper */
+        #canvas-wrapper {
+            margin: 20px 0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid #e2e8f0;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        /* Navigation */
+        .nav-header {
+            width: 100%;
+            background: white;
+            padding: 15px 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-sizing: border-box;
+        }
+
+        .nav-brand {
+            font-weight: 700;
+            font-size: 20px;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-item {
+            text-decoration: none;
+            color: var(--slate-600);
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.2s;
+        }
+
+        .nav-item:hover {
+            color: var(--primary);
+        }
+
+        /* Adjust body padding for fixed nav */
+        body {
+            padding-top: 80px !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="nav-header">
+        <a href="shops.html" class="nav-brand">🛡️ TrustL</a>
+        <div class="nav-links">
+            <a href="shops.html" class="nav-item">🛍️ Shops</a>
+            <a href="vendor.html" class="nav-item" style="color: var(--primary);">🏪 Vendor Portal</a>
+        </div>
+    </nav>
+
+    <div class="tagline">Official Vendor Verification Portal</div>
+
+    <div class="container">
+        <!-- Step 0: Identity Verification -->
+        <div id="step-0">
+            <h2>Vendor Identity Check</h2>
+            <p style="color: var(--slate-600); margin-bottom: 20px; font-size: 14px;">
+                Before verifying products, we need to verify <b>YOU</b>.
+            </p>
+
+            <div id="identity-form">
+                <label for="reg-name">Vendor/Business Name</label>
+                <input type="text" id="reg-name" placeholder="e.g. John's Tech Store">
+
+                <label>Social Media Handles (for verification)</label>
+                <input type="text" id="reg-insta" placeholder="Instagram (e.g. @johnstech)">
+                <input type="text" id="reg-whatsapp" placeholder="WhatsApp (e.g. +254...)">
+
+                <label>Face Identification</label>
+                <div class="upload-box" id="selfie-drop-zone" style="padding: 20px; margin-bottom: 20px;">
+                    <span class="upload-icon">🤳</span>
+                    <p style="margin:0; font-size:14px;">Upload a Selfie</p>
+                    <input type="file" id="selfie-input" accept="image/*" class="hidden">
+                </div>
+                <img id="selfie-preview" class="hidden"
+                    style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin: 0 auto 20px; display: block;">
+
+                <button id="btn-register">Start Verification &rarr;</button>
+            </div>
+        </div>
+
+        <!-- Step 1: Upload & Details -->
+        <div id="step-1" class="hidden">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #f1f5f9;">
+                <div id="vendor-welcome" style="font-weight: 600; color: var(--slate-800);"></div>
+                <a href="shops.html" target="_blank"
+                    style="font-size: 13px; color: var(--primary); text-decoration: none; font-weight: 600;">View My
+                    Shop &rarr;</a>
+            </div>
+
+            <div id="upload-section">
+                <h2>Upload Product</h2>
+                <div class="upload-box" id="drop-zone">
+                    <span class="upload-icon">📷</span>
+                    <p>Click to upload product photo</p>
+                    <input type="file" id="file-input" accept="image/*" class="hidden">
+                </div>
+            </div>
+
+            <img id="preview" class="hidden" alt="Product Preview">
+
+            <div id="details-form" class="hidden">
+                <label for="product-name">Product Name</label>
+                <input type="text" id="product-name" placeholder="e.g. Wireless Mouse M300">
+
+                <button id="btn-verify">✨ Verify & Generate Post</button>
+            </div>
+        </div>
+
+        <!-- Step 2: Result -->
+        <div id="step-2" class="hidden">
+            <h2 style="color: var(--primary);">Verification Successful!</h2>
+            <p style="color: var(--slate-600); margin-bottom: 20px; font-size: 14px;">
+                Your product has been verified. Download this image to post on social media.
+            </p>
+
+            <div id="canvas-wrapper">
+                <canvas id="output-canvas"></canvas>
+            </div>
+
+            <button id="btn-download">Download Image ⬇️</button>
+            <button class="secondary" onclick="location.reload()">Verify Another Product</button>
+        </div>
+
+        <p id="status-msg" class="status"></p>
+    </div>
+
+    <!-- Hidden QR Code Gen Div -->
+    <div id="qr-code-hidden" style="display:none;"></div>
+
+    <script src="vendor.js"></script>
+</body>
+
+</html>

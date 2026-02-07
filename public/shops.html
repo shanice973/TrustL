@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrustL - Verified Shops Directory</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --slate-50: #f8fafc;
+            --slate-100: #f1f5f9;
+            --slate-600: #475569;
+            --slate-800: #1e293b;
+            --gold: #f59e0b;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--slate-50);
+            margin: 0;
+            padding: 0;
+            color: var(--slate-800);
+        }
+
+        header {
+            background: white;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 24px;
+            color: var(--slate-800);
+        }
+
+        .subtitle {
+            color: var(--slate-600);
+            margin-top: 5px;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 30px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .vendors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .vendor-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            border: 1px solid transparent;
+        }
+
+        .vendor-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .vendor-card.pro {
+            border: 1px solid var(--gold);
+            background: linear-gradient(to bottom, #fffbeb, #fff);
+        }
+
+        .pro-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--gold);
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 15px;
+            object-fit: cover;
+            border: 2px solid var(--slate-100);
+        }
+
+        .vendor-name {
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .social-links {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .social-links a {
+            text-decoration: none;
+            font-size: 20px;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--slate-600);
+            grid-column: 1 / -1;
+            padding: 40px;
+        }
+
+        /* Navigation */
+        .nav-header {
+            width: 100%;
+            background: white;
+            padding: 15px 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-sizing: border-box;
+        }
+
+        .nav-brand {
+            font-weight: 700;
+            font-size: 20px;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-item {
+            text-decoration: none;
+            color: var(--slate-600);
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.2s;
+        }
+
+        .nav-item:hover {
+            color: var(--primary);
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="nav-header">
+        <a href="shops.html" class="nav-brand">🛡️ TrustL</a>
+        <div class="nav-links">
+            <a href="shops.html" class="nav-item" style="color: var(--primary);">🛍️ Shops</a>
+            <a href="vendor.html" class="nav-item">🏪 Vendor Portal</a>
+        </div>
+    </nav>
+
+    <header style="margin-top: 60px;">
+        <h1>🛍️ Verified Shops Dashboard</h1>
+        <div class="subtitle">Browse verified local vendors you can trust.</div>
+    </header>
+
+    <div class="container">
+        <input type="text" id="search" class="search-bar" placeholder="Search for a shop...">
+
+        <div id="grid" class="vendors-grid">
+            <!-- Cards go here -->
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', fetchVendors);
+        document.getElementById('search').addEventListener('input', filterVendors);
+
+        let allVendors = [];
+
+        async function fetchVendors() {
+            try {
+                const res = await fetch('/api/vendors');
+                const data = await res.json();
+                if (data.success) {
+                    allVendors = data.vendors;
+                    renderVendors(allVendors);
+                }
+            } catch (err) {
+                console.error("Failed to load vendors", err);
+            }
+        }
+
+        function renderVendors(vendors) {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+
+            if (vendors.length === 0) {
+                grid.innerHTML = '<div class="empty-state">No vendors found.</div>';
+                return;
+            }
+
+            // Sort: Pro first
+            vendors.sort((a, b) => (b.isPro === true) - (a.isPro === true));
+
+            vendors.forEach(v => {
+                const card = document.createElement('div');
+                card.className = `vendor-card ${v.isPro ? 'pro' : ''}`;
+
+                let socialsHtml = '';
+                if (v.socials?.instagram) socialsHtml += `<a href="https://instagram.com/${v.socials.instagram.replace('@', '')}" target="_blank">📸</a>`;
+                if (v.socials?.whatsapp) socialsHtml += `<a href="https://wa.me/${v.socials.whatsapp.replace('+', '')}" target="_blank">💬</a>`;
+
+                card.innerHTML = `
+                    ${v.isPro ? '<div class="pro-badge">PRO VERIFIED</div>' : ''}
+                    <img src="${v.avatarUrl}" class="avatar" alt="${v.name}">
+                    <div class="vendor-name">${v.name}</div>
+                    <div style="font-size: 12px; color: #64748b;">Member since ${new Date(v.joinedAt).getFullYear()}</div>
+                    <div class="social-links">${socialsHtml}</div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterVendors(e) {
+            const term = e.target.value.toLowerCase();
+            const filtered = allVendors.filter(v => v.name.toLowerCase().includes(term));
+            renderVendors(filtered);
+        }
+    </script>
+</body>
+
+</html>

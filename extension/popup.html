@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrustL Verification</title>
+    <link rel="stylesheet" href="popup.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>TrustL</h1>
+            <p>AI Authenticity Checker</p>
+        </header>
+
+        <main>
+            <div class="tab-container">
+                <button class="tab-btn active" id="tab-page">Page</button>
+                <button class="tab-btn" id="tab-upload">Upload</button>
+                <button class="tab-btn" id="tab-search">Find Shop</button>
+            </div>
+
+            <div id="view-page" class="view-section active">
+                <div class="status-card" id="page-status">
+                    <p>Navigate to a product page to verify.</p>
+                </div>
+                <!-- <div class="verified-badge hidden" id="verified-badge">✅ Verified Vendor</div> -->
+                <button id="btn-verify-page" class="action-btn">Verify This Product</button>
+            </div>
+
+            <div id="view-upload" class="view-section">
+                <div class="upload-area" id="drop-zone">
+                    <p>Click or Drag image here</p>
+                    <input type="file" id="file-input" accept="image/*" hidden>
+                </div>
+                <div id="preview-container" class="hidden">
+                    <img id="image-preview" src="" alt="Preview">
+                </div>
+                <button id="btn-verify-upload" class="action-btn" disabled>Verify Upload</button>
+            </div>
+
+            <div id="view-search" class="view-section hidden">
+                <input type="text" id="search-input" placeholder="Search verified shops..."
+                    style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; margin-bottom: 10px;">
+                <div id="search-results" style="max-height: 200px; overflow-y: auto;">
+                    <p style="text-align: center; color: #94a3b8; font-size: 12px;">Type to search...</p>
+                </div>
+            </div>
+
+            <div id="result-container" class="hidden">
+                <div class="loader hidden"></div>
+                <div class="result-content">
+                    <h3 id="result-title">Analyzing...</h3>
+                    <div class="score-ring" id="score-ring">
+                        <span id="score-value">--</span>
+                    </div>
+                    <p id="result-message"></p>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <a href="http://localhost:5000/vendor.html" target="_blank"
+                style="color: #64748b; text-decoration: none; font-size: 12px;">Vendor? Get Verified &rarr;</a>
+        </footer>
+    </div>
+    <script src="popup.js"></script>
+</body>
+
+</html>

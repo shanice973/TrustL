@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrustL Certificate of Authenticity</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #10b981;
+            --primary-bg: #ecfdf5;
+            --danger: #ef4444;
+            --danger-bg: #fef2f2;
+            --slate-800: #1e293b;
+            --slate-500: #64748b;
+            --slate-50: #f8fafc;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--slate-50);
+            color: var(--slate-800);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            width: 100%;
+            max-width: 440px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Top Accent Bar */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: var(--primary);
+        }
+
+        .icon-check {
+            width: 80px;
+            height: 80px;
+            background: var(--primary-bg);
+            color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 40px;
+            box-shadow: 0 4px 6px -1px rgb(16 185 129 / 0.2);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--slate-800);
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: var(--primary);
+            font-weight: 600;
+            margin: 8px 0 32px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .details {
+            background: #f1f5f9;
+            padding: 24px;
+            border-radius: 12px;
+            text-align: left;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #cbd5e1;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--slate-500);
+            text-transform: uppercase;
+        }
+
+        .value {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--slate-800);
+        }
+
+        .score-badge {
+            background: var(--primary);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 99px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .footer {
+            margin-top: 32px;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 40px auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Error State */
+        .card.error::before {
+            background: var(--danger);
+        }
+
+        .card.error .icon-check {
+            background: var(--danger-bg);
+            color: var(--danger);
+            box-shadow: none;
+        }
+
+        .card.error h1 {
+            color: var(--danger);
+        }
+
+        .card.error .subtitle {
+            color: var(--danger);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card" id="card">
+        <div id="loading">
+            <div class="loader"></div>
+            <p style="color: var(--slate-500);">Verifying Certificate...</p>
+        </div>
+
+        <div id="content" style="display: none;">
+            <div class="icon-check">✓</div>
+            <h1>Authentic</h1>
+            <p class="subtitle">TrustL Verified</p>
+
+            <div class="details">
+                <div class="detail-row">
+                    <span class="label">Product</span>
+                    <span class="value" id="c-product">--</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Vendor</span>
+                    <span class="value" id="c-vendor">--</span>
+                </div>
+
+                <!-- Socials Section -->
+                <div id="socials-container"
+                    style="display:none; padding-top: 10px; border-top: 1px dashed #cbd5e1; margin-top: 10px;">
+                    <div class="detail-row" id="row-insta" style="display:none">
+                        <span class="label">Instagram</span>
+                        <a id="link-insta" href="#" target="_blank"
+                            style="color: #e1306c; text-decoration: none; font-weight: bold;">@handle</a>
+                    </div>
+                    <div class="detail-row" id="row-whatsapp" style="display:none">
+                        <span class="label">WhatsApp</span>
+                        <a id="link-whatsapp" href="#" target="_blank"
+                            style="color: #25d366; text-decoration: none; font-weight: bold;">Chat</a>
+                    </div>
+                    <div style="text-align: center; margin-top: 10px;">
+                        <span
+                            style="background: #eff6ff; color: #3b82f6; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold;">
+                            🛡️ Identity Verified (Face Check)
+                        </span>
+                    </div>
+                </div>
+
+                <div class="detail-row" style="margin-top: 10px;">
+                    <span class="label">Verified Date</span>
+                    <span class="value" id="c-date">--</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Safety Score</span>
+                    <span class="score-badge" id="c-score">--</span>
+                </div>
+
+                <!-- TrustPay Button -->
+                <button id="btn-trustpay"
+                    style="width: 100%; margin-top: 20px; background: #22c55e; color: white; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    🔒 Buy Securely with TrustPay
+                </button>
+                <p style="text-align: center; font-size: 11px; color: #64748b; margin-top: 5px;">Money is held in escrow
+                    until you receive the item.</p>
+            </div>
+
+            <p class="footer">Certificate ID: <span id="c-id" style="font-family: monospace;"></span></p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
+            const card = document.getElementById('card');
+
+            // Artificial Delay for effect
+            await new Promise(r => setTimeout(r, 600));
+
+            if (!id) {
+                showError("No Certificate ID found.");
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/certificates/${id}`);
+                const data = await response.json();
+
+                if (!data.success) {
+                    showError("Certificate not found.");
+                    return;
+                }
+
+                const cert = data.certificate;
+                document.getElementById('c-product').textContent = cert.product;
+                document.getElementById('c-vendor').textContent = cert.vendor;
+                document.getElementById('c-date').textContent = new Date(cert.timestamp).toLocaleDateString();
+                document.getElementById('c-score').textContent = (cert.verificationResult.confidence * 100).toFixed(0) + "%";
+                document.getElementById('c-id').textContent = cert.id;
+
+                // Show Socials if available
+                if (cert.vendorDetails && cert.vendorDetails.socials) {
+                    const socials = cert.vendorDetails.socials;
+                    document.getElementById('socials-container').style.display = 'block';
+
+                    if (socials.instagram) {
+                        document.getElementById('row-insta').style.display = 'flex';
+                        document.getElementById('link-insta').textContent = socials.instagram;
+                        document.getElementById('link-insta').href = `https://instagram.com/${socials.instagram.replace('@', '')}`;
+                    }
+                    if (socials.whatsapp) {
+                        document.getElementById('row-whatsapp').style.display = 'flex';
+                        document.getElementById('link-whatsapp').textContent = socials.whatsapp;
+                        document.getElementById('link-whatsapp').href = `https://wa.me/${socials.whatsapp.replace('+', '')}`;
+                    }
+                }
+
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+
+                // TrustPay Click
+                document.getElementById('btn-trustpay').addEventListener('click', async () => {
+                    const btn = document.getElementById('btn-trustpay');
+                    btn.disabled = true;
+                    btn.innerText = "Processing...";
+
+                    try {
+                        const res = await fetch('/api/payments/process', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                type: 'ESCROW_PAYMENT',
+                                amount: 50, // Mock amount
+                                details: { certId: cert.id, vendor: cert.vendor }
+                            })
+                        });
+                        const data = await res.json();
+                        if (data.success) {
+                            alert(`Success! Transaction ID: ${data.transactionId}\nMoney held in escrow.`);
+                            btn.innerText = "✅ Paid (In Escrow)";
+                            btn.style.background = "#059669";
+                        }
+                    } catch (err) {
+                        alert("Payment failed.");
+                        btn.disabled = false;
+                        btn.innerText = "🔒 Buy Securely with TrustPay";
+                    }
+                });
+
+            } catch (error) {
+                showError("Network Error. Please try again.");
+            }
+        });
+
+        function showError(msg) {
+            const card = document.getElementById('card');
+            card.classList.add('error');
+            document.getElementById('loading').style.display = 'none';
+            card.innerHTML = `
+            <div class="icon-check" style="background: #fee2e2; color: #ef4444;">✕</div>
+            <h1>Invalid</h1>
+            <p class="subtitle" style="color: #ef4444;">Verification Failed</p>
+            <p style="color: #64748b; margin-top: 20px;">${msg}</p>
+        `;
+        }
+    </script>
+
+</body>
+
+</html>
