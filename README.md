@@ -4,18 +4,21 @@ TrustL is a secure, AI-powered product verification platform designed to combat 
 
 ## 🚀 Key Features
 
-*   **AI-Powered Verification**: Uses Hugging Face Inference API (ViT, ResNet, MobileNet) to analyze product images.
-*   **Secure Vendor Identity**: Strict vendor registration with mocked facial verification (selfie check) and social handle verification.
-*   **Tamper-Evident Certificates**: Generates digital certificates for verified authentic products.
+*   **AI-Powered Product Verification**: Uses Hugging Face Inference API (ViT, ResNet) to analyze product images for authenticity.
+*   **Vendor Identity Verification (OCR)**: Integrates **Tesseract.js** to scan ID cards/Passports and verify the vendor's name matches the document text.
+*   **Business Validation**: Allows vendors to upload Business Licenses for "Business Verified" status.
+*   **Chrome Extension**: A companion browser extension that allows users to verify products directly on e-commerce sites.
 *   **Security First**: Implemented with Helmet (secure headers), Rate Limiting, and strict Input Validation.
-*   **Persistent Storage**: Local JSON-based storage for certificates and vendor data (Mock DB).
+*   **Persistent Storage**: Local JSON-based storage for certificates and vendor data.
 
 ## 🛠️ Tech Stack
 
 *   **Backend**: Node.js, Express.js
 *   **AI Service**: Hugging Face Inference API (@huggingface/inference)
+*   **OCR Engine**: Tesseract.js (Local Optical Character Recognition)
+*   **Frontend**: HTML5, CSS3 (Modern UI with Gradients), JavaScript (Vanilla)
+*   **Browser Extension**: Chrome Manifest V3
 *   **Security**: Helmet, Express-Rate-Limit, Express-Validator
-*   **Storage**: Local JSON Store (Simulates Database)
 
 ## 📦 Installation
 
@@ -41,6 +44,11 @@ TrustL is a secure, AI-powered product verification platform designed to combat 
     ```bash
     npm start
     ```
+    *Server runs on http://localhost:5000*
+
+5.  **Test Verification**:
+    *   **Vendor Portal**: Go to [http://localhost:5000/vendor.html](http://localhost:5000/vendor.html) to register (Upload ID & License).
+    *   **Shops**: View verified vendors at [http://localhost:5000/shops.html](http://localhost:5000/shops.html).
 
 ## 🔒 Security
 
