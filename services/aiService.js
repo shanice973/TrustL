@@ -109,3 +109,100 @@ function normalizeResponse(model, data) {
 export const verifyText = async (text) => {
     return { valid: true, note: "Text verification not implemented yet" };
 };
+
+// --- Face Verification Logic ---
+
+// Calculate Cosine Similarity between two vectors
+function cosineSimilarity(vecA, vecB) {
+    const dotProduct = vecA.reduce((sum, a, i) => sum + a * vecB[i], 0);
+    const magA = Math.sqrt(vecA.reduce((sum, a) => sum + a * a, 0));
+    const magB = Math.sqrt(vecB.reduce((sum, b) => sum + b * b, 0));
+    return dotProduct / (magA * magB);
+}
+
+export const verifyFaceIdentity = async (referenceImage, liveImage) => {
+    try {
+        console.log("[AI Service] Starting Face Verification...");
+        // Fallback: Use Image Captioning to compare descriptions
+        const model = "Salesforce/blip-image-captioning-large";
+        const url = `https://api-inference.huggingface.co/models/${model}`;
+
+        const getEmbedding = async (imageData) => {
+            let imagePayload;
+
+            // Convert to Buffer for raw binary upload
+            if (Buffer.isBuffer(imageData)) {
+                imagePayload = imageData;
+            } else if (typeof imageData === 'string' && imageData.startsWith('data:image')) {
+                const base64Data = imageData.split(',')[1];
+                imagePayload = Buffer.from(base64Data, 'base64');
+            } else {
+                throw new Error("Invalid image data format");
+            }
+
+            // Send RAW BINARY data, not JSON
+            const response = await axios.post(url, imagePayload, {
+                headers: {
+                    Authorization: `Bearer ${HF_KEY}`,
+                    "Content-Type": "application/octet-stream"
+                }
+            });
+            return response.data;
+        };
+
+        // Parallel fetch for speed
+        const [embeddingRef, embeddingLive] = await Promise.all([
+            getEmbedding(referenceImage),
+            getEmbedding(liveImage)
+        ]);
+
+        if (!Array.isArray(embeddingRef) || !Array.isArray(embeddingLive)) {
+            throw new Error("Invalid response format from AI model.");
+        }
+
+        let score = 0;
+        let method = "embedding";
+
+        // Check if response is Caption-based (BLIP)
+        if (embeddingRef[0]?.generated_text && embeddingLive[0]?.generated_text) {
+            method = "caption";
+            const textA = embeddingRef[0].generated_text.toLowerCase();
+            const textB = embeddingLive[0].generated_text.toLowerCase();
+            console.log(`[AI Service] Comparing Captions: "${textA}" vs "${textB}"`);
+
+            // Simple Jaccard Similarity on words
+            const wordsA = new Set(textA.split(/\s+/));
+            const wordsB = new Set(textB.split(/\s+/));
+            const intersection = new Set([...wordsA].filter(x => wordsB.has(x)));
+            const union = new Set([...wordsA, ...wordsB]);
+            score = intersection.size / union.size;
+        }
+        // Assume Embedding-based
+        else if (typeof embeddingRef[0] === 'number') {
+            score = cosineSimilarity(embeddingRef, embeddingLive);
+        }
+
+        console.log(`[AI Service] Match Score (${method}): ${score.toFixed(4)}`);
+
+        // Thresholds: Caption ~0.5 (loose), Embedding >0.8
+        const threshold = method === 'caption' ? 0.5 : 0.8;
+        const isMatch = score > threshold;
+
+        return {
+            isMatch,
+            score,
+            details: isMatch ? "Identity Verified" : "Face mismatch detected."
+        };
+
+    } catch (error) {
+        if (error.response) {
+            console.error("AI API Error:", error.response.status, error.response.data);
+            // Fallback for 410/404/503: Mock success if in development/demo mode to unblock user?
+            // For now, just throw.
+        } else {
+            console.error("Face Verification Error:", error.message);
+        }
+        // Return a mock failure instead of crashing the app
+        return { isMatch: false, score: 0, details: "AI Service Unavailable. Please try again." };
+    }
+};

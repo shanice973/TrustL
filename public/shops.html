@@ -7,17 +7,21 @@
     <title>TrustL - Verified Shops Directory</title>
     <style>
         :root {
-            --primary: #2563eb;
-            --slate-50: #f8fafc;
-            --slate-100: #f1f5f9;
-            --slate-600: #475569;
+            --primary: #10b981;
+            /* Unified Green */
+            --primary-dark: #059669;
             --slate-800: #1e293b;
+            --slate-600: #475569;
+            --slate-50: #f8fafc;
+            --white: #ffffff;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
             --gold: #f59e0b;
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: var(--slate-50);
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #ecfdf5 0%, #f1f5f9 100%);
             margin: 0;
             padding: 0;
             color: var(--slate-800);
@@ -81,6 +85,7 @@
         .vendor-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary);
         }
 
         .vendor-card.pro {
@@ -106,7 +111,7 @@
             border-radius: 50%;
             margin-bottom: 15px;
             object-fit: cover;
-            border: 2px solid var(--slate-100);
+            border: 2px solid var(--slate-50);
         }
 
         .vendor-name {
@@ -136,7 +141,7 @@
         /* Navigation */
         .nav-header {
             width: 100%;
-            background: white;
+            background: var(--slate-800);
             padding: 15px 20px;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             display: flex;
@@ -152,7 +157,7 @@
         .nav-brand {
             font-weight: 700;
             font-size: 20px;
-            color: var(--primary);
+            color: #ffffff;
             text-decoration: none;
             display: flex;
             align-items: center;
@@ -162,12 +167,13 @@
         .nav-links {
             display: flex;
             gap: 20px;
+            align-items: center;
         }
 
         .nav-item {
             text-decoration: none;
-            color: var(--slate-600);
-            font-weight: 600;
+            color: #cbd5e1;
+            font-weight: 500;
             font-size: 14px;
             display: flex;
             align-items: center;
@@ -175,7 +181,8 @@
             transition: color 0.2s;
         }
 
-        .nav-item:hover {
+        .nav-item:hover,
+        .nav-item.active {
             color: var(--primary);
         }
     </style>
@@ -184,11 +191,11 @@
 <body>
 
     <nav class="nav-header">
-        <a href="shops.html" class="nav-brand">🛡️ TrustL</a>
-        <div class="nav-links">
-            <a href="shops.html" class="nav-item" style="color: var(--primary);">🛍️ Shops</a>
-            <a href="vendor.html" class="nav-item">🏪 Vendor Portal</a>
+        <div style="display: flex; align-items: center; gap: 30px;">
+            <a href="shops.html" class="nav-brand">🛡️ TrustL</a>
+            <a href="vendor.html" class="nav-item">✅ Vendor Verification</a>
         </div>
+        <a href="shops.html" class="nav-item active">🛍️ Shops</a>
     </nav>
 
     <header style="margin-top: 60px;">

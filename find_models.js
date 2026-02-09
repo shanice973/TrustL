@@ -5,7 +5,7 @@ const findModel = async () => {
         console.log("Searching for popular vit/resnet models...");
         const response = await axios.get("https://huggingface.co/api/models", {
             params: {
-                filter: "image-classification",
+                filter: "image-feature-extraction",
                 sort: "downloads",
                 direction: -1,
                 limit: 100

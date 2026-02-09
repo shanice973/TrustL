@@ -21,7 +21,8 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: var(--slate-50);
+            background: linear-gradient(135deg, #ecfdf5 0%, #f1f5f9 100%);
+            /* Minty gradient */
             color: var(--slate-800);
             margin: 0;
             padding: 40px 20px;
@@ -54,7 +55,11 @@
             box-shadow: var(--shadow-lg);
             text-align: center;
             transition: transform 0.2s;
+            border-top: 6px solid var(--primary);
+            /* subtle color pop */
         }
+
+        /* ... existing styles ... */
 
         h2 {
             font-size: 20px;
@@ -70,8 +75,61 @@
             padding: 40px 20px;
             cursor: pointer;
             transition: all 0.2s ease;
-            background: #f1f5f9;
+            background: #f8fafc;
             color: var(--slate-600);
+        }
+
+        /* ... existing styles ... */
+
+        /* Navigation */
+        .nav-header {
+            width: 100%;
+            background: var(--slate-800);
+            /* Dark header */
+            padding: 15px 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-sizing: border-box;
+        }
+
+        .nav-brand {
+            font-weight: 700;
+            font-size: 20px;
+            color: #ffffff;
+            /* White text */
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-item {
+            text-decoration: none;
+            color: #cbd5e1;
+            /* Light gray */
+            font-weight: 500;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.2s;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            color: var(--primary);
         }
 
         .upload-box:hover {
@@ -252,11 +310,11 @@
 <body>
 
     <nav class="nav-header">
-        <a href="shops.html" class="nav-brand">🛡️ TrustL</a>
-        <div class="nav-links">
-            <a href="shops.html" class="nav-item">🛍️ Shops</a>
-            <a href="vendor.html" class="nav-item" style="color: var(--primary);">🏪 Vendor Portal</a>
+        <div style="display: flex; align-items: center; gap: 30px;">
+            <a href="shops.html" class="nav-brand">🛡️ TrustL</a>
+            <a href="vendor.html" class="nav-item active">✅ Vendor Verification</a>
         </div>
+        <a href="shops.html" class="nav-item">🛍️ Shops</a>
     </nav>
 
     <div class="tagline">Official Vendor Verification Portal</div>
@@ -277,14 +335,43 @@
                 <input type="text" id="reg-insta" placeholder="Instagram (e.g. @johnstech)">
                 <input type="text" id="reg-whatsapp" placeholder="WhatsApp (e.g. +254...)">
 
-                <label>Face Identification</label>
-                <div class="upload-box" id="selfie-drop-zone" style="padding: 20px; margin-bottom: 20px;">
-                    <span class="upload-icon">🤳</span>
-                    <p style="margin:0; font-size:14px;">Upload a Selfie</p>
-                    <input type="file" id="selfie-input" accept="image/*" class="hidden">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <!-- Selfie -->
+                    <div>
+                        <label>Selfie (Profile)</label>
+                        <div class="upload-box" id="selfie-drop-zone" style="padding: 15px; margin-bottom: 10px;">
+                            <span class="upload-icon" style="font-size: 24px;">🤳</span>
+                            <p style="margin:0; font-size:12px;">Upload Selfie</p>
+                            <input type="file" id="selfie-input" accept="image/*" class="hidden">
+                        </div>
+                        <img id="selfie-preview" class="hidden"
+                            style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; margin: 0 auto; display: block;">
+                    </div>
+
+                    <!-- ID Card -->
+                    <div>
+                        <label>ID Card / Passport *</label>
+                        <div class="upload-box" id="id-drop-zone" style="padding: 15px; margin-bottom: 10px;">
+                            <span class="upload-icon" style="font-size: 24px;">🆔</span>
+                            <p style="margin:0; font-size:12px;">Upload ID</p>
+                            <input type="file" id="id-input" accept="image/*" class="hidden">
+                        </div>
+                        <img id="id-preview" class="hidden"
+                            style="width: 80px; height: 50px; border-radius: 4px; object-fit: cover; margin: 0 auto; display: block;">
+                    </div>
                 </div>
-                <img id="selfie-preview" class="hidden"
-                    style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin: 0 auto 20px; display: block;">
+
+                <!-- Business License -->
+                <label style="margin-top: 15px;">Business License (Optional)</label>
+                <div class="upload-box" id="license-drop-zone" style="padding: 15px; margin-bottom: 20px;">
+                    <span class="upload-icon" style="font-size: 24px;">📄</span>
+                    <p style="margin:0; font-size:14px;">Upload Business Registration/License</p>
+                    <input type="file" id="license-input" accept="image/*" class="hidden">
+                </div>
+                <div id="license-preview-text" class="hidden"
+                    style="font-size: 12px; color: var(--primary); margin-bottom: 20px;">
+                    ✅ Document Attached
+                </div>
 
                 <button id="btn-register">Start Verification &rarr;</button>
             </div>

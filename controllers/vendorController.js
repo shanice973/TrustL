@@ -23,6 +23,8 @@ export const registrationLimiter = rateLimit({
 export const validateVendorRegistration = [
     body('name').trim().isLength({ min: 2 }).withMessage('Name must be at least 2 chars'),
     body('selfieImage').notEmpty().withMessage('Selfie image is required'),
+    body('idCardImage').notEmpty().withMessage('ID Card image is required'),
+    body('businessLicense').optional().isString(),
     body('instagram').optional().trim(),
     body('whatsapp').optional().trim(),
     body('tiktok').optional().trim(),
@@ -35,17 +37,47 @@ export const validateVendorRegistration = [
     }
 ];
 
+import { extractTextFromImage, verifyNameInText } from '../services/ocrService.js';
+// import { verifyFaceIdentity } from '../services/aiService.js'; // Deprecated for now
+
 export const registerVendor = async (req, res) => {
     try {
-        const { name, instagram, whatsapp, tiktok, selfieImage } = req.body;
+        const { name, instagram, whatsapp, tiktok, selfieImage, idCardImage, businessLicense } = req.body;
 
         // 1. Duplicate Check
         if (instagram && socialHandleIndex.has(instagram)) return res.status(409).json({ error: "Instagram handle already registered." });
         if (whatsapp && socialHandleIndex.has(whatsapp)) return res.status(409).json({ error: "WhatsApp number already registered." });
         if (tiktok && socialHandleIndex.has(tiktok)) return res.status(409).json({ error: "TikTok handle already registered." });
 
-        // 2. Mock Face Verification
-        // const isFaceReal = await verifyFace(selfieImage); 
+        // 2. ID Document Verification (OCR)
+        console.log(`[Vendor] Verifying ID Document for ${name}...`);
+
+        let idVerificationResult = { verified: false, text: "" };
+        try {
+            // Extract text from the uploaded ID card image
+            const extractedText = await extractTextFromImage(idCardImage);
+            console.log(`[Vendor] OCR Text Length: ${extractedText.length}`);
+
+            // Verify if the Vendor Name appears on the ID Card
+            const isNamePresent = verifyNameInText(extractedText, name);
+
+            idVerificationResult = {
+                verified: isNamePresent,
+                text: extractedText.substring(0, 100) + "..." // Store partial text for debug/admin
+            };
+
+            if (!isNamePresent) {
+                console.warn(`[Vendor] ID Verification Warning: Name "${name}" not found in ID text.`);
+                // For prototype, we might want to proceed but mark as unverified
+                // return res.status(403).json({ error: "ID Verification Failed. Name not found on document." });
+            } else {
+                console.log(`[Vendor] ID Verification Passed! Name found.`);
+            }
+
+        } catch (err) {
+            console.error("[Vendor] OCR Service Error:", err.message);
+            // Allow proceed but unverified
+        }
 
         const vendorId = Math.random().toString(36).substr(2, 9);
         const vendorData = {
@@ -53,7 +85,10 @@ export const registerVendor = async (req, res) => {
             name,
             socials: { instagram, whatsapp, tiktok },
             verifiedAt: new Date().toISOString(),
-            isIdentityVerified: true
+            isIdentityVerified: idVerificationResult.verified,
+            idCardData: idVerificationResult.text, // Store extracted text snippet
+            businessLicense: businessLicense || null,
+            isBusinessVerified: !!businessLicense // Auto-verify if doc provided for prototype
         };
 
         // Save to shared store
@@ -64,9 +99,16 @@ export const registerVendor = async (req, res) => {
         if (whatsapp) socialHandleIndex.add(whatsapp);
         if (tiktok) socialHandleIndex.add(tiktok);
 
-        res.json({ success: true, vendorId, message: "Identity Verified Successfully." });
+        res.json({
+            success: true,
+            vendorId,
+            message: "Vendor Registered Successfully.",
+            identityVerified: idVerificationResult.verified,
+            ocrPreview: idVerificationResult.text
+        });
 
     } catch (error) {
+        console.error("Registration Error:", error);
         res.status(500).json({ error: error.message });
     }
 };
